@@ -1,6 +1,6 @@
 [package]
 name = "solfmt"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Formats output of Solana's `cargo test-bpf/test-sbf` command"
 license = "MIT"
