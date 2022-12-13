@@ -8,13 +8,27 @@ enum Importance {
     Low,
     Medium,
     High,
+    Error,
 }
 
 fn get_importance(
     log_level: &str,
     log_source: &str,
     program_source: &str,
+    program_log: &str,
 ) -> Importance {
+    let log = program_log.to_lowercase();
+    if log.contains("error: ")
+        || log.contains("error ")
+        || log.contains("err: ")
+        || log.contains("err ")
+        || log.contains("failure: ")
+        || log.contains("failure ")
+        || log.contains("fail: ")
+        || log.contains("fail ")
+    {
+        return Importance::Error;
+    }
     match log_level {
         "INFO" => Importance::High,
         "DEBUG" if program_source == "Program log:" => Importance::High,
@@ -38,6 +52,7 @@ fn log_pretty(importance: Importance, log_level: &str, log: &str) {
     use Importance::*;
     let level = color_log_level(log_level);
     match importance {
+        Error => println!("{} {}", level, Color::Fixed(9).bold().paint(log)),
         High => println!("{} {}", level, Color::Green.paint(log)),
         Medium => println!("{} {}", level, Color::Fixed(243).paint(log)),
         Low => println!("{} {}", level, Color::Fixed(239).paint(log)),
@@ -51,9 +66,17 @@ fn log_line(rx: &Regex, line: &str) {
             let log_source = caps.get(2).unwrap().as_str();
             let program_source = caps.get(3).unwrap().as_str();
             let program_log = caps.get(4).unwrap().as_str();
-            let importance =
-                get_importance(log_level, log_source, program_source);
-            let log = format!("{} {}", program_source, program_log);
+            let importance = get_importance(
+                log_level,
+                log_source,
+                program_source,
+                program_log,
+            );
+            let log = if program_source == "Program log:" {
+                program_log.to_string()
+            } else {
+                format!("{} {}", program_source, program_log)
+            };
             log_pretty(importance, log_level, &log);
         }
         None => println!("{}", line),
