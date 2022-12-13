@@ -17,7 +17,16 @@ fn get_importance(
     program_source: &str,
     program_log: &str,
 ) -> Importance {
-    if program_log.contains("custom program error") {
+    let log = program_log.to_lowercase();
+    if log.contains("error: ")
+        || log.contains("error ")
+        || log.contains("err: ")
+        || log.contains("err ")
+        || log.contains("failure: ")
+        || log.contains("failure ")
+        || log.contains("fail: ")
+        || log.contains("fail ")
+    {
         return Importance::Error;
     }
     match log_level {
@@ -63,7 +72,11 @@ fn log_line(rx: &Regex, line: &str) {
                 program_source,
                 program_log,
             );
-            let log = format!("{} {}", program_source, program_log);
+            let log = if program_source == "Program log:" {
+                program_log.to_string()
+            } else {
+                format!("{} {}", program_source, program_log)
+            };
             log_pretty(importance, log_level, &log);
         }
         None => println!("{}", line),
