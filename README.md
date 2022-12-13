@@ -2,6 +2,8 @@
 
 Formats output of Solana's `cargo test-bpf/test-sbf` command.
 
+![fmt-logs](assets/fmt-logs.png)
+
 ## Installation
 
 ```sh
@@ -19,13 +21,6 @@ cargo test-sbf -- --test-threads=1 2>&1 | solfmt
 ```
 
 4. Enjoy more readable logs
-
-![fmt-logs](assets/fmt-logs.png)
-
-### Same logs without solfmt
-
-![raw-logs](assets/raw-logs.png)
-
 
 ## LICENSE
 
